@@ -14,9 +14,6 @@ from multiprocessing.dummy import Pool as ThreadPool
 
 
 class BigCommerce(object):
-    # api endpoint
-    path = "https://www.moonlightfeather.com/api/v2/"
-    # path = "https://store-enbou.mybigcommerce.com/api/v2/"
     error_codes = {
                    200: "OK",
                    201: "Created",
@@ -39,6 +36,8 @@ class BigCommerce(object):
 
     def __init__(self):
         # user and key from settings -> legacy api settings
+        # api endpoint
+        self.path = self._getPath()
         self.user = self._getUser()
         self.key = self._getKey()
         # auth must be base64 encoded in <user>:<key> format
@@ -75,9 +74,20 @@ class BigCommerce(object):
         except:
             raise Exception("No Key Found in bc.data.  Add 'key <key>' to bc.data file.")
 
+    @staticmethod
+    def _getPath():
+        with open("bc.data", "rb") as f:
+            for line in f:
+                line = line.split()
+                if line[0] == "path":
+                    path = line[1]
+        try:
+            return path
+        except:
+            raise Exception("No Key Found in bc.data.  Add 'key <key>' to bc.data file.")
+
 
 class Products(BigCommerce):
-    path = BigCommerce.path + "products/"
 
     def __init__(self, debug=False):
         """
@@ -85,6 +95,7 @@ class Products(BigCommerce):
         """
         self.debug = debug
         super(Products, self).__init__()
+        self.path = self.path + "products/"
 
 
     #########################
@@ -433,13 +444,13 @@ class Products(BigCommerce):
 
 
 class Orders(BigCommerce):
-    path = BigCommerce.path + "orders/"
     transactions_data_path = "transactions/bctransactions.csv"
     backup_path = "transactions/bctransactionsbackup.csv"
 
     def __init__(self, debug=False):
         self.debug = debug
         super(Products, self).__init__()
+        self.path = self.path + "orders/"
 
     def listOrders(
                    self,
@@ -663,7 +674,6 @@ class Orders(BigCommerce):
 
 
 class Content(BigCommerce):
-    path = BigCommerce.path
 
     def __init__(self):
         super(Products, self).__init__()
@@ -691,10 +701,10 @@ class Content(BigCommerce):
 
 
 class Customers(BigCommerce):
-    path = BigCommerce.path + "customer_groups/"
 
     def __init__(self):
         super(Products, self).__init__()
+        self.path = self.path + "customer_groups/"
 
     def listCustomerGroups(self, name=None, is_default=None, page=1, limit=50):
         path = self.path
@@ -721,6 +731,7 @@ class Customers(BigCommerce):
         path = self.path + str(id)
         r = requests.put(path, data=data, headers=self.headers)
         return r
+
 
 def testclasses():
     print(Products.path)
