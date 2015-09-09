@@ -1,5 +1,8 @@
 # BigCommerce
 
+### Dependencies
+- requests
+
 ### Setup
 - Go to your big commerce dashboard
 - Under settings go to legacy api settings and setup a new user
