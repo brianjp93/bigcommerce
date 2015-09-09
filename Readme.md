@@ -42,6 +42,23 @@ p = Product()
 p.updateProduct("12034", inventory_level="40")  # Updates id 12034 with stock = 40
 ```
 
+#### Convert a sku to its Big Commerce ID number
+- say we want to know what the big commerce id number is for sku 1234.  It is simply a dictionary key and value.
+```python
+from bigcommerce import Product
+p = Product()
+sku1234 = p.getSingleProduct("1234")
+id1234 = sku1234["id"]
+```
+- or we can likewise do
+```python
+from bigcommerce import Product
+p = Product()
+skus = p.getAllProducts()
+id1234 = skus["1234"]["id"]
+```
+- The latter method is nice because we don't have to keep calling ```getSingleProduct```, to get id numbers.  We've just asked for all the information at once.  This may be overkill in some situations where you only need a few id numbers, or other information about a sku.
+
 There are more methods available which I may write about later if I find the motivation.
 
 ### License
