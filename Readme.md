@@ -10,7 +10,9 @@
   key <key>
   path <api_path>
   ```
+
 ### Basic Usage
+
 #### Get a product and data
 - Assuming you have a SKU = 1234, we can write:
 ```python
@@ -19,6 +21,7 @@ p = Product()
 sku1234 = p.getSingleProduct("1234")
 ```
   - sku1234 will be a dictionary of information about sku 1234
+
 #### Get all skus
 ```python
 from bigcommerce import Product
@@ -30,3 +33,16 @@ skus = p.getAllProducts()
 skus["1234"]
 ```
   to view information about sku 1234.
+
+#### Update a product
+- take note that ```updateProduct``` takes a bigcommerce product id instead of a sku.  I often use this method in conjuction with ```getAllProducts``` or ```getSingleProduct```.
+```python
+from bigcommerce import Product
+p = Product()
+p.updateProduct("12034", inventory_level="40")  # Updates id 12034 with stock = 40
+```
+
+There are more methods available which I may write about later if I find the motivation.
+
+### License
+https://opensource.org/licenses/MIT
