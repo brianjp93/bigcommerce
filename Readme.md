@@ -26,7 +26,7 @@ p = Product()
 skus = p.getAllProducts()
 ```
   - Now we can do
-  ```python
-  skus["1234"]
-  ```
+```python
+skus["1234"]
+```
   to view information about sku 1234.
