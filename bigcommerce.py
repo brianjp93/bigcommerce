@@ -141,7 +141,7 @@ class Products(BigCommerce):
         __VARIABLES__
         refer to url reference for descriptions of the variables
         """
-        print("Running _listProducts Function.")
+        # print("Running _listProducts Function.")
         path = self.path
         payload = {"page": page, "limit": limit}
         # conditionally add filters if filter is not None
@@ -229,6 +229,42 @@ class Products(BigCommerce):
             temp_data = r.json()
             item = temp_data[0]
             return item
+
+    def listProductImages(self, id, page=1, limit=250):
+        """
+        REFERENCE -> https://developer.bigcommerce.com/api/stores/v2/products/images
+        Lists image information for a single product based on a given id.
+        """
+        path = "{}{}/images".format(self.path, id)
+        # print(path)
+        payload = {"page": page, "limit": limit}
+        r = requests.get(url=path, headers=self.headers, params=payload)
+        return r
+
+    def createProductImage(self, id, image_file):
+        """
+        REFERNCE -> https://developer.bigcommerce.com/api/stores/v2/products/images
+        """
+        path = "{}{}/images".format(self.path, id)
+        data = {}
+        data["image_file"] = image_file
+        r = requests.post(path, data=json.dumps(data), headers=self.headers)
+        if self.debug:
+            print(r.text)
+        return r
+
+    def updateProductImage(self, id, image_id, image_file, sort_order=None):
+        """
+        REFERNCE -> https://developer.bigcommerce.com/api/stores/v2/products/images
+        """
+        path = "{}{}/images/{}".format(self.path, id, image_id)
+        data = {}
+        data["image_file"] = image_file
+        if sort_order is not None: data["sort_order"] = sort_order
+        r = requests.put(path, data=json.dumps(data), headers=self.headers)
+        if self.debug:
+            print(r.text)
+        return r
 
     def updateProduct(
                       self,
@@ -756,58 +792,96 @@ def testListProducts():
     # print(r.url)
     print(pprint.pformat(r.json()))
 
+
 def testGetAllProducts():
     p = Products()
     skus = p.getAllProducts()["skus"]
     for sku in skus:
         print("{}: id={}, stock={}".format(sku, skus[sku]["id"], skus[sku]["inventory_level"]))
 
+
 def testGetSingleProduct():
     p = Products()
     sku = p.getSingleProduct("1335")
     print(sku)
+
 
 def testGetOrders():
     o = Orders()
     r = o.listOrders()
     print(pprint.pformat(r.json()))
 
+
 def testListOrderProducts():
     o = Orders()
     r = o.listOrderProducts(101)
     print(pprint.pformat(r.json()))
+
 
 def testGetAllTransactions():
     o = Orders()
     t = o.getAllTransactions()
     print(pprint.pformat(t))
 
+
 def testSaveTransactions():
     o = Orders()
     t = o.getAllTransactions()
     o.saveTransactions(500)
+
 
 def listCustomerGroups():
     c = Customers()
     r = c.listCustomerGroups()
     print(pprint.pformat(r.json()))
 
+
 def testListShipments():
     o = Orders()
     r = o.listShipments(164)
     print(r.json()[0])
+
 
 def testUpdateShipmentTracking():
     o = Orders()
     r = o.updateShipmentTracking("164", "9400115901648459036562")
     print(r.content)
 
+
+def testListProductImages():
+    p = Products()
+    r = p.listProductImages(7579)
+    print(pprint.pformat(r.json()))
+
+
+def testCreateProductImage():
+    """
+    Don't know if this works
+    """
+    p = Products()
+    r = p.createProductImage(7579, "https://www.featherout.com/assets/Product_Photos/pink3.jpg")
+    # print(pprint.pformat(r.json()))
+    print(r.text)
+
+
+def testUpdateProductImage():
+    """
+    works
+    """
+    p = Products()
+    r = p.updateProductImage(7580, "18471", "https://www.featherout.com/assets/Product_Photos/white1.jpg", sort_order=0)
+    print(pprint.pformat(r.json()))
+    # print(dir(r))
+    # print(r.content)
+    # print(r.headers)
+
+
 if __name__ == '__main__':
     # testclasses()
     # testCreateBulkPricingRule()
     # testListProducts()
     # testGetAllProducts()
-    testGetSingleProduct()
+    # testGetSingleProduct()
     # testGetOrders()
     # testListOrderProducts()
     # testGetAllTransactions()
@@ -815,3 +889,6 @@ if __name__ == '__main__':
     # listCustomerGroups()
     # testListShipments()
     # testUpdateShipmentTracking()
+    # testListProductImages()
+    # testCreateProductImage()
+    testUpdateProductImage()
